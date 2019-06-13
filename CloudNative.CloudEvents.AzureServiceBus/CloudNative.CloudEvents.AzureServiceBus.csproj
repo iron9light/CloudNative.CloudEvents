@@ -15,4 +15,9 @@
     <Copyright>iron9light@gmail.com</Copyright>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CloudNative.CloudEvents" Version="0.1.31" />
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.4.0" />
+  </ItemGroup>
+
 </Project>

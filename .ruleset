@@ -10,6 +10,8 @@
         <Rule Id="SA1200" Action="None" />
         <!-- ElementsMustBeOrderedByAccess -->
         <Rule Id="SA1202" Action="None" />
+        <!-- StaticElementsMustAppearBeforeInstanceElements -->
+        <Rule Id="SA1204" Action="None" />
         <!-- FieldNamesMustNotBeginWithUnderscore -->
         <Rule Id="SA1309" Action="None" />
         <!-- FileMayOnlyContainASingleType -->
