@@ -1,0 +1,64 @@
+# User-specific files
+*.suo
+*.user
+*.vs/
+*.log
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+[Bb]in/
+[Oo]bj/
+[Oo]bjd/
+[Oo]bjchk/
+pingme.txt
+stderr.txt
+tracker_fileAccesses
+excluded_inputs.txt
+observed_inputs.txt
+observed_outputs.txt
+predicted_inputs.txt
+
+# corext
+build_logs/
+builder_log/
+data/versions.xml
+out/gen/
+private/packages/
+QLocal/
+QLog/
+QLogs/
+QTestLogs/
+target/
+tmp/cache/
+version/versions.xml
+*.s2gdb
+*.marks
+build.*
+!build.cmd
+buildd.*
+public/inc/bldver.*
+public/inc/sources.ver
+public/inc/version.txt
+DPKUploadLoger*.log
+VersionGeneration
+VersionGeneratingLogs
+QuickBuild.log
+__cacheOutput/
+__tracer/
+
+# Visual Studio
+*.VC.db
+*.VC.opendb
+*.opensdf
+
+# Tests
+TestResults/
+
+#Exclude nuget packages folders
+private/nuget/packages/
+packages/
+!Binplacing/Packakges/NuGet/
+#ignore envkeep.txt
+build/envkeep.txt
