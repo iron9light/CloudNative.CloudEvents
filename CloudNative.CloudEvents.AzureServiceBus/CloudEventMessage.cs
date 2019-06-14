@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 
@@ -7,38 +8,37 @@ namespace CloudNative.CloudEvents.AzureServiceBus
 {
     public class CloudEventMessage : Message
     {
-        public CloudEventMessage(CloudEvent cloudEvent, ContentMode contentMode, ICloudEventFormatter formatter)
+        public CloudEventMessage(CloudEvent cloudEvent, ICloudEventFormatter formatter)
         {
+            Body = formatter.EncodeStructuredEvent(cloudEvent, out var contentType);
+            ContentType = contentType.MediaType;
             MessageId = cloudEvent.Id;
+            MapHeaders(cloudEvent);
+        }
 
-            if (contentMode == ContentMode.Structured)
+        public CloudEventMessage(CloudEvent cloudEvent)
+        {
+            switch (cloudEvent.Data)
             {
-                Body = formatter.EncodeStructuredEvent(cloudEvent, out var contentType);
-                ContentType = contentType.MediaType;
-            }
-            else
-            {
-                switch (cloudEvent.Data)
-                {
-                    case byte[] bytes:
-                        Body = bytes;
-                        break;
-                    case MemoryStream stream:
-                        Body = stream.ToArray();
-                        break;
-                    case Stream stream:
-                        var buffer = new MemoryStream();
-                        stream.CopyTo(buffer);
-                        Body = buffer.ToArray();
-                        break;
-                    case string s:
-                        Body = GetEncoding(cloudEvent).GetBytes(s);
-                        break;
-                }
-
-                ContentType = cloudEvent.DataContentType?.MediaType;
+                case byte[] bytes:
+                    Body = bytes;
+                    break;
+                case MemoryStream stream:
+                    Body = stream.ToArray();
+                    break;
+                case Stream stream:
+                    var buffer = new MemoryStream();
+                    stream.CopyTo(buffer);
+                    Body = buffer.ToArray();
+                    break;
+                case string s:
+                    Body = GetEncoding(cloudEvent).GetBytes(s);
+                    break;
             }
 
+            ContentType = cloudEvent.DataContentType?.MediaType;
+
+            MessageId = cloudEvent.Id;
             MapHeaders(cloudEvent);
         }
 
@@ -50,7 +50,22 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                     attribute.Key != CloudEventAttributes.IdAttributeName(cloudEvent.SpecVersion) &&
                     attribute.Key != CloudEventAttributes.DataContentTypeAttributeName(cloudEvent.SpecVersion))
                 {
-                    UserProperties.Add(Constants.PropertyKeyPrefix + attribute.Key, attribute.Value);
+                    var key = Constants.PropertyKeyPrefix + attribute.Key;
+                    switch (attribute.Value)
+                    {
+                        case string s:
+                            UserProperties.Add(key, s);
+                            break;
+                        case Uri uri:
+                            UserProperties.Add(key, uri.ToString());
+                            break;
+                        case DateTime dateTime:
+                            UserProperties.Add(key, dateTime.ToUniversalTime().ToString("o"));
+                            break;
+                        default:
+                            UserProperties.Add(key, attribute.Value);
+                            break;
+                    }
                 }
             }
         }

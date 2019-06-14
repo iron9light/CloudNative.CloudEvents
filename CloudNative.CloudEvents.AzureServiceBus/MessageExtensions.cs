@@ -40,7 +40,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                     }
                     else
                     {
-                        throw new InvalidOperationException("Unsupported CloudEvents encoding");
+                        throw new InvalidOperationException($"Unsupported CloudEvents ContentType: {contentType}");
                     }
                 }
 
@@ -49,8 +49,8 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             else
             {
                 var specVersion = GetCloudEventsSpecVersion(message);
-                var cloudEventType = GetAttribute<string>(message, CloudEventAttributes.TypeAttributeName(specVersion));
-                var cloudEventSource = GetAttribute<Uri>(message, CloudEventAttributes.SourceAttributeName(specVersion));
+                var cloudEventType = GetAttribute(message, CloudEventAttributes.TypeAttributeName(specVersion));
+                var cloudEventSource = new Uri(GetAttribute(message, CloudEventAttributes.SourceAttributeName(specVersion)));
                 var cloudEvent = new CloudEvent(specVersion, cloudEventType, cloudEventSource, id: message.MessageId, extensions: extensions);
                 var attributes = cloudEvent.GetAttributes();
                 foreach (var property in message.UserProperties)
@@ -58,10 +58,12 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                     if (property.Key.StartsWith(Constants.PropertyKeyPrefix, StringComparison.InvariantCultureIgnoreCase))
                     {
                         var key = property.Key.Substring(Constants.PropertyKeyPrefix.Length).ToLowerInvariant();
+
                         attributes[key] = property.Value;
                     }
                 }
 
+                cloudEvent.Id = message.MessageId;
                 cloudEvent.DataContentType = message.ContentType == null ? null : new ContentType(message.ContentType);
                 cloudEvent.Data = message.Body;
                 return cloudEvent;
@@ -88,13 +90,12 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             return CloudEventsSpecVersion.Default;
         }
 
-        private static T? GetAttribute<T>(Message message, string key)
-            where T : class
+        private static string? GetAttribute(Message message, string key)
         {
             var propertyKey = Constants.PropertyKeyPrefix + key;
             if (message.UserProperties.TryGetValue(propertyKey, out var value))
             {
-                return value as T;
+                return value.ToString();
             }
             else
             {
