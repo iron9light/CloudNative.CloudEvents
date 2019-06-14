@@ -32,42 +32,52 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             var contentType = message.ContentType;
             if (contentType != null && contentType.StartsWith(CloudEvent.MediaType, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (formatter == null)
-                {
-                    if (contentType.EndsWith(JsonEventFormatter.MediaTypeSuffix, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        formatter = _jsonFormatter;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Unsupported CloudEvents ContentType: {contentType}");
-                    }
-                }
-
-                return formatter.DecodeStructuredEvent(new MemoryStream(message.Body), extensions);
+                return StructuredToCloudEvent(message, formatter, extensions);
             }
             else
             {
-                var specVersion = GetCloudEventsSpecVersion(message);
-                var cloudEventType = GetAttribute(message, CloudEventAttributes.TypeAttributeName(specVersion));
-                var cloudEventSource = new Uri(GetAttribute(message, CloudEventAttributes.SourceAttributeName(specVersion)));
-                var cloudEvent = new CloudEvent(specVersion, cloudEventType, cloudEventSource, id: message.MessageId, extensions: extensions);
-                var attributes = cloudEvent.GetAttributes();
-                foreach (var property in message.UserProperties)
-                {
-                    if (property.Key.StartsWith(Constants.PropertyKeyPrefix, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var key = property.Key.Substring(Constants.PropertyKeyPrefix.Length).ToLowerInvariant();
-
-                        attributes[key] = property.Value;
-                    }
-                }
-
-                cloudEvent.Id = message.MessageId;
-                cloudEvent.DataContentType = message.ContentType == null ? null : new ContentType(message.ContentType);
-                cloudEvent.Data = message.Body;
-                return cloudEvent;
+                return BinaryToCloudEvent(message, extensions);
             }
+        }
+
+        private static CloudEvent StructuredToCloudEvent(Message message, ICloudEventFormatter? formatter, params ICloudEventExtension[] extensions)
+        {
+            if (formatter == null)
+            {
+                if (message.ContentType.EndsWith(JsonEventFormatter.MediaTypeSuffix, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    formatter = _jsonFormatter;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Unsupported CloudEvents ContentType: {message.ContentType}");
+                }
+            }
+
+            return formatter.DecodeStructuredEvent(new MemoryStream(message.Body), extensions);
+        }
+
+        private static CloudEvent BinaryToCloudEvent(Message message, params ICloudEventExtension[] extensions)
+        {
+            var specVersion = GetCloudEventsSpecVersion(message);
+            var cloudEventType = GetAttribute(message, CloudEventAttributes.TypeAttributeName(specVersion));
+            var cloudEventSource = new Uri(GetAttribute(message, CloudEventAttributes.SourceAttributeName(specVersion)));
+            var cloudEvent = new CloudEvent(specVersion, cloudEventType, cloudEventSource, id: message.MessageId, extensions: extensions);
+            var attributes = cloudEvent.GetAttributes();
+            foreach (var property in message.UserProperties)
+            {
+                if (property.Key.StartsWith(Constants.PropertyKeyPrefix, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var key = property.Key.Substring(Constants.PropertyKeyPrefix.Length).ToLowerInvariant();
+
+                    attributes[key] = property.Value;
+                }
+            }
+
+            cloudEvent.Id = message.MessageId;
+            cloudEvent.DataContentType = message.ContentType == null ? null : new ContentType(message.ContentType);
+            cloudEvent.Data = message.Body;
+            return cloudEvent;
         }
 
         private static CloudEventsSpecVersion GetCloudEventsSpecVersion(Message message)

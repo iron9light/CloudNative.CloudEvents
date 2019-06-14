@@ -51,14 +51,8 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                     var key = Constants.PropertyKeyPrefix + attribute.Key;
                     switch (attribute.Value)
                     {
-                        case string s:
-                            UserProperties.Add(key, s);
-                            break;
                         case Uri uri:
                             UserProperties.Add(key, uri.ToString());
-                            break;
-                        case DateTime dateTime:
-                            UserProperties.Add(key, dateTime.ToUniversalTime().ToString("o"));
                             break;
                         default:
                             UserProperties.Add(key, attribute.Value);
