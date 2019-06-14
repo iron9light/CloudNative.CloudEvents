@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Text;
 
 using Microsoft.Azure.ServiceBus;
 
@@ -31,9 +30,8 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                     stream.CopyTo(buffer);
                     Body = buffer.ToArray();
                     break;
-                case string s:
-                    Body = GetEncoding(cloudEvent).GetBytes(s);
-                    break;
+                default:
+                    throw new InvalidOperationException($"Unsupported data type: {cloudEvent.Data.GetType().FullName}");
             }
 
             ContentType = cloudEvent.DataContentType?.MediaType;
@@ -67,18 +65,6 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                             break;
                     }
                 }
-            }
-        }
-
-        private static Encoding GetEncoding(CloudEvent cloudEvent)
-        {
-            if (cloudEvent.DataContentEncoding != null)
-            {
-                return Encoding.GetEncoding(cloudEvent.DataContentEncoding);
-            }
-            else
-            {
-                return Constants.DefaultEncoding;
             }
         }
     }
