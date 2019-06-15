@@ -9,7 +9,5 @@ namespace CloudNative.CloudEvents.AzureServiceBus
         public static string SpecVersion1PropertyKey { get; } = PropertyKeyPrefix + "cloudEventsVersion";
 
         public static string SpecVersion2PropertyKey { get; } = PropertyKeyPrefix + "specversion";
-
-        public static Encoding DefaultEncoding => Encoding.UTF8;
     }
 }

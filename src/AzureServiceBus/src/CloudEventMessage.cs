@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using Microsoft.Azure.ServiceBus;
@@ -42,11 +43,16 @@ namespace CloudNative.CloudEvents.AzureServiceBus
 
         private void MapHeaders(CloudEvent cloudEvent)
         {
+            var ignoreKeys = new List<string>(3)
+                {
+                    CloudEventAttributes.DataAttributeName(cloudEvent.SpecVersion),
+                    CloudEventAttributes.IdAttributeName(cloudEvent.SpecVersion),
+                    CloudEventAttributes.DataContentTypeAttributeName(cloudEvent.SpecVersion),
+                };
+
             foreach (var attribute in cloudEvent.GetAttributes())
             {
-                if (attribute.Key != CloudEventAttributes.DataAttributeName(cloudEvent.SpecVersion) &&
-                    attribute.Key != CloudEventAttributes.IdAttributeName(cloudEvent.SpecVersion) &&
-                    attribute.Key != CloudEventAttributes.DataContentTypeAttributeName(cloudEvent.SpecVersion))
+                if (!ignoreKeys.Contains(attribute.Key))
                 {
                     var key = Constants.PropertyKeyPrefix + attribute.Key;
                     switch (attribute.Value)

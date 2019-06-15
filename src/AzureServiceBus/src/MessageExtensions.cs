@@ -27,7 +27,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             return InternalToCloudEvent(message, formatter, extensions);
         }
 
-        private static CloudEvent InternalToCloudEvent(Message message, ICloudEventFormatter? formatter, params ICloudEventExtension[] extensions)
+        private static CloudEvent InternalToCloudEvent(Message message, ICloudEventFormatter? formatter, ICloudEventExtension[] extensions)
         {
             var contentType = message.ContentType;
             if (contentType != null && contentType.StartsWith(CloudEvent.MediaType, StringComparison.InvariantCultureIgnoreCase))
@@ -40,7 +40,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             }
         }
 
-        private static CloudEvent StructuredToCloudEvent(Message message, ICloudEventFormatter? formatter, params ICloudEventExtension[] extensions)
+        private static CloudEvent StructuredToCloudEvent(Message message, ICloudEventFormatter? formatter, ICloudEventExtension[] extensions)
         {
             if (formatter == null)
             {
@@ -54,10 +54,13 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                 }
             }
 
-            return formatter.DecodeStructuredEvent(new MemoryStream(message.Body), extensions);
+            using (var stream = new MemoryStream(message.Body))
+            {
+                return formatter.DecodeStructuredEvent(stream, extensions);
+            }
         }
 
-        private static CloudEvent BinaryToCloudEvent(Message message, params ICloudEventExtension[] extensions)
+        private static CloudEvent BinaryToCloudEvent(Message message, ICloudEventExtension[] extensions)
         {
             var specVersion = GetCloudEventsSpecVersion(message);
             var cloudEventType = GetAttribute(message, CloudEventAttributes.TypeAttributeName(specVersion));
@@ -74,7 +77,6 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                 }
             }
 
-            cloudEvent.Id = message.MessageId;
             cloudEvent.DataContentType = message.ContentType == null ? null : new ContentType(message.ContentType);
             cloudEvent.Data = message.Body;
             return cloudEvent;
