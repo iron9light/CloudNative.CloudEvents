@@ -8,6 +8,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudNative.CloudEvents.Azu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureServiceBus", "AzureServiceBus", "{3B6CD2C7-BD40-433D-B3B7-C75B31DF7158}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Json", "Json", "{0889BC4F-C2CF-45E3-8A34-0AE62C80BBF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudNative.CloudEvents.Json", "src\Json\src\CloudNative.CloudEvents.Json.csproj", "{D708681D-0567-43F0-9151-A84FE98271EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudNative.CloudEvents.Json.Tests", "src\Json\test\CloudNative.CloudEvents.Json.Tests.csproj", "{CA446B3B-9E22-498E-B77C-56110B03F0E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +28,14 @@ Global
 		{81DACE3D-C4DE-4EF5-A94B-9405B05D89FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DACE3D-C4DE-4EF5-A94B-9405B05D89FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DACE3D-C4DE-4EF5-A94B-9405B05D89FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D708681D-0567-43F0-9151-A84FE98271EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D708681D-0567-43F0-9151-A84FE98271EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D708681D-0567-43F0-9151-A84FE98271EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D708681D-0567-43F0-9151-A84FE98271EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA446B3B-9E22-498E-B77C-56110B03F0E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA446B3B-9E22-498E-B77C-56110B03F0E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA446B3B-9E22-498E-B77C-56110B03F0E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA446B3B-9E22-498E-B77C-56110B03F0E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -29,6 +43,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F18F9670-E7FF-4D7D-8921-3DB7CB5F89F6} = {3B6CD2C7-BD40-433D-B3B7-C75B31DF7158}
 		{81DACE3D-C4DE-4EF5-A94B-9405B05D89FE} = {3B6CD2C7-BD40-433D-B3B7-C75B31DF7158}
+		{D708681D-0567-43F0-9151-A84FE98271EE} = {0889BC4F-C2CF-45E3-8A34-0AE62C80BBF1}
+		{CA446B3B-9E22-498E-B77C-56110B03F0E4} = {0889BC4F-C2CF-45E3-8A34-0AE62C80BBF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EAD8A80-1C77-4C23-A037-01A45705263F}

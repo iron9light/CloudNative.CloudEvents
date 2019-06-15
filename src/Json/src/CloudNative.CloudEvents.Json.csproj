@@ -10,14 +10,13 @@
     <Company />
     <Authors>iron9light@gmail.com</Authors>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>CloudNative;CloudEvents;Microsoft;Azure;ServiceBus;AMQP;Message;Queue</PackageTags>
-    <Description>Azure ServiceBus extension for CloudNative.CloudEvents</Description>
+    <PackageTags>CloudNative;CloudEvents;Json</PackageTags>
+    <Description>Generic Json extension for CloudNative.CloudEvents</Description>
     <Copyright>iron9light@gmail.com</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CloudNative.CloudEvents" Version="0.1.31" />
-    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.4.0" />
   </ItemGroup>
 
 </Project>
