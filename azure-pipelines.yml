@@ -34,7 +34,7 @@ steps:
 - script: dotnet tool install --tool-path . dotnet-sonarscanner
   displayName: 'Install SonarScanner tool'
 
-- script: dotnet-sonarscanner begin /k:"iron9light_CloudNative.CloudEvents.AzureServiceBus" /o:"iron9light-github" /v:"$(Build.BuildNumber)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(sonar.token)"
+- script: dotnet-sonarscanner begin /k:"iron9light_CloudNative.CloudEvents" /o:"iron9light-github" /v:"$(Build.BuildNumber)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(sonar.token)"
   displayName: 'SonarScanner begin'
 
 - script: dotnet build --configuration $(buildConfiguration)

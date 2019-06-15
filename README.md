@@ -1,9 +1,9 @@
 # Extensions for CloudNative.CloudEvents
 
-[![Build Status](https://iron9light.visualstudio.com/github/_apis/build/status/iron9light.CloudNative.CloudEvents.AzureServiceBus?branchName=master)](https://iron9light.visualstudio.com/github/_build/latest?definitionId=2&branchName=master)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents.AzureServiceBus&metric=ncloc)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents.AzureServiceBus)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents.AzureServiceBus&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents.AzureServiceBus)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents.AzureServiceBus&metric=security_rating)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents.AzureServiceBus)
+[![Build Status](https://iron9light.visualstudio.com/github/_apis/build/status/iron9light.CloudNative.CloudEvents?branchName=master)](https://iron9light.visualstudio.com/github/_build/latest?definitionId=3&branchName=master)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents&metric=ncloc)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents&metric=security_rating)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents)
 
 ## CloudNative.CloudEvents.AzureServiceBus
 [Azure ServiceBus](https://github.com/Azure/azure-sdk-for-net/tree/master/sdk/servicebus/Microsoft.Azure.ServiceBus) extensions for [CloudNative.CloudEvents](https://github.com/cloudevents/spec)
