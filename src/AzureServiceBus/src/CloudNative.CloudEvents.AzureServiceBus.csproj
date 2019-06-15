@@ -5,8 +5,8 @@
     <LangVersion>8.0</LangVersion>
     <NullableContextOptions>enable</NullableContextOptions>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/iron9light/CloudNative.CloudEvents.AzureServiceBus</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/iron9light/CloudNative.CloudEvents.AzureServiceBus</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/iron9light/CloudNative.CloudEvents</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/iron9light/CloudNative.CloudEvents</PackageProjectUrl>
     <Company />
     <Authors>iron9light@gmail.com</Authors>
     <RepositoryType>git</RepositoryType>
