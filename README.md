@@ -9,3 +9,14 @@
 [Azure ServiceBus](https://github.com/Azure/azure-sdk-for-net/tree/master/sdk/servicebus/Microsoft.Azure.ServiceBus) extension for [CloudNative.CloudEvents](https://github.com/cloudevents/spec)
 
 [![NuGet](https://img.shields.io/nuget/v/CloudNative.CloudEvents.AzureServiceBus.svg)](https://www.nuget.org/packages/CloudNative.CloudEvents.AzureServiceBus/)
+
+## CloudNative.CloudEvents.Json
+Generic Json extension for [CloudNative.CloudEvents](https://github.com/cloudevents/spec)
+
+[![NuGet](https://img.shields.io/nuget/v/CloudNative.CloudEvents.Json.svg)](https://www.nuget.org/packages/CloudNative.CloudEvents.Json/)
+
+```csharp
+var formatter = new JsonCloudEventFormatter<MyData>();
+var cloudEvent = formatter.DecodeStructuredEvent(jsonData);
+cloudEvent.Data.Should().BeOfType<MyData>(); // The type of Data is MyData type, but not JToken
+```
