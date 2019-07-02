@@ -2,6 +2,7 @@
 
 [![Build Status](https://iron9light.visualstudio.com/github/_apis/build/status/iron9light.CloudNative.CloudEvents?branchName=master)](https://iron9light.visualstudio.com/github/_build/latest?definitionId=3&branchName=master)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents&metric=ncloc)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents&metric=coverage)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=iron9light_CloudNative.CloudEvents&metric=security_rating)](https://sonarcloud.io/dashboard?id=iron9light_CloudNative.CloudEvents)
 
