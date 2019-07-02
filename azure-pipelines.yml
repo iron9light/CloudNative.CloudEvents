@@ -34,8 +34,13 @@ steps:
 - script: dotnet tool install --tool-path . dotnet-sonarscanner
   displayName: 'Install SonarScanner tool'
 
+- script: dotnet-sonarscanner begin /k:"iron9light_CloudNative.CloudEvents" /o:"iron9light-github" /v:"$(Build.BuildNumber)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(sonar.token)" /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="$(Agent.TempDirectory)/*.trx" /d:sonar.pullrequest.key=$(System.PullRequest.PullRequestNumber) /d:sonar.pullrequest.branch="$(System.PullRequest.SourceBranch)" /d:sonar.pullrequest.base="$(System.PullRequest.TargetBranch)" /d:sonar.pullrequest.github.repository="iron9light/CloudNative.CloudEvents"
+  displayName: 'SonarScanner begin (PR)'
+  condition: variables['System.PullRequest.SourceBranch']
+
 - script: dotnet-sonarscanner begin /k:"iron9light_CloudNative.CloudEvents" /o:"iron9light-github" /v:"$(Build.BuildNumber)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$(sonar.token)" /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="$(Agent.TempDirectory)/*.trx"
   displayName: 'SonarScanner begin'
+  condition: not(variables['System.PullRequest.SourceBranch'])
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
@@ -66,3 +71,9 @@ steps:
     pathToPublish: $(Build.ArtifactStagingDirectory)\artifacts
     artifactType: container
     artifactName: Packages
+
+- task: PublishCodeCoverageResults@1
+  displayName: Publish Coverage
+  inputs:
+    codeCoverageTool: cobertura
+    summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
