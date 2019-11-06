@@ -15,7 +15,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
         public void ServiceBusStructuredMessageTest()
 #pragma warning restore S2699 // Tests should include assertions
         {
-            ServiceBusMessageTest(cloudEvent => new CloudEventMessage(cloudEvent, new JsonEventFormatter()), ContentMode.Structured);
+            ServiceBusMessageTest(cloudEvent => new ServiceBusCloudEventMessage(cloudEvent, new JsonEventFormatter()), ContentMode.Structured);
         }
 
         [Fact]
@@ -23,14 +23,14 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
         public void ServiceBusBinaryMessageTest()
 #pragma warning restore S2699 // Tests should include assertions
         {
-            ServiceBusMessageTest(cloudEvent => new CloudEventMessage(cloudEvent), ContentMode.Binary);
+            ServiceBusMessageTest(cloudEvent => new ServiceBusCloudEventMessage(cloudEvent), ContentMode.Binary);
         }
 
-        private void ServiceBusMessageTest(Func<CloudEvent, CloudEventMessage> event2message, ContentMode contentMode)
+        private void ServiceBusMessageTest(Func<CloudEvent, ServiceBusCloudEventMessage> event2message, ContentMode contentMode)
         {
             var data = "<much wow=\"xml\"/>";
             var cloudEvent = new CloudEvent(
-                CloudEventsSpecVersion.V0_3,
+                CloudEventsSpecVersion.V1_0,
                 "com.github.pull.create",
                 source: new Uri("https://github.com/cloudevents/spec/pull"),
                 subject: "123")

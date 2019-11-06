@@ -6,9 +6,9 @@ using Microsoft.Azure.ServiceBus;
 
 namespace CloudNative.CloudEvents.AzureServiceBus
 {
-    public static class MessageExtensions
+    public static class ServiceBusMessageExtensions
     {
-        private static JsonEventFormatter _jsonFormatter = new JsonEventFormatter();
+        private static readonly JsonEventFormatter _jsonFormatter = new JsonEventFormatter();
 
         public static bool IsCloudEvent(this Message message)
         {
@@ -96,6 +96,8 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                         return CloudEventsSpecVersion.V0_2;
                     case "0.3":
                         return CloudEventsSpecVersion.V0_3;
+                    case "1.0":
+                        return CloudEventsSpecVersion.V1_0;
                 }
             }
 

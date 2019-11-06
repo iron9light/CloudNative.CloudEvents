@@ -15,7 +15,7 @@ namespace CloudNative.CloudEvents.Json.Tests
 
         public string ComExampleExtension1
         {
-            get => attributes[ExtensionAttribute].ToString();
+            get => attributes[ExtensionAttribute].ToString() ?? string.Empty;
             set => attributes[ExtensionAttribute] = value;
         }
 
@@ -54,13 +54,11 @@ namespace CloudNative.CloudEvents.Json.Tests
 
         public Type? GetAttributeType(string name)
         {
-            switch (name)
-            {
-                case ExtensionAttribute:
-                    return typeof(string);
-            }
-
-            return null;
+            return name switch
+                {
+                    ExtensionAttribute => typeof(string),
+                    _ => null,
+                };
         }
     }
 }
