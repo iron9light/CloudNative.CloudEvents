@@ -19,7 +19,7 @@ namespace CloudNative.CloudEvents.Json.Tests
         public void ReserializeTest()
         {
             var cloudEvent = _formatter.DecodeStructuredEvent(Encoding.UTF8.GetBytes(_json));
-            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out var contentType);
+            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
             cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
@@ -38,7 +38,7 @@ namespace CloudNative.CloudEvents.Json.Tests
         {
             var cloudEvent = _formatter.DecodeStructuredEvent(Encoding.UTF8.GetBytes(_json));
             cloudEvent.SpecVersion = CloudEventsSpecVersion.V0_1;
-            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out var contentType);
+            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
             cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
@@ -56,7 +56,7 @@ namespace CloudNative.CloudEvents.Json.Tests
         public void StructuredParseSuccess()
         {
             var cloudEvent = _formatter.DecodeStructuredEvent(Encoding.UTF8.GetBytes(_json));
-            cloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.V0_3);
+            cloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.V1_0);
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");
@@ -76,7 +76,7 @@ namespace CloudNative.CloudEvents.Json.Tests
                 Encoding.UTF8.GetBytes(_json),
                 new ComExampleExtension1Extension(),
                 new ComExampleExtension2Extension());
-            cloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.V0_3);
+            cloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.V1_0);
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");

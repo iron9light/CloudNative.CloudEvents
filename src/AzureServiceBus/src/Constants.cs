@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace CloudNative.CloudEvents.AzureServiceBus
 {
     internal static class Constants

@@ -59,13 +59,11 @@ namespace CloudNative.CloudEvents.Json.Tests
 
         public Type? GetAttributeType(string name)
         {
-            switch (name)
-            {
-                case ExtensionAttribute:
-                    return typeof(CustomData);
-            }
-
-            return null;
+            return name switch
+                {
+                    ExtensionAttribute => typeof(CustomData),
+                    _ => null,
+                };
         }
     }
 }

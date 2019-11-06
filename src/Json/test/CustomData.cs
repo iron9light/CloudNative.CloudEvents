@@ -7,7 +7,7 @@ namespace CloudNative.CloudEvents.Json.Tests
     {
         public int OtherValue { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is CustomData other)
             {

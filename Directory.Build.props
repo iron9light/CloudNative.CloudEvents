@@ -12,13 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.183" PrivateAssets="All"/>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.26" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All"/>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.15.0.8572" PrivateAssets="All"/>
-    <PackageReference Include="coverlet.msbuild" Version="2.6.3" PrivateAssets="All"/>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.0.0.9566" PrivateAssets="All"/>
+    <PackageReference Include="coverlet.msbuild" Version="2.7.0" PrivateAssets="All"/>
   </ItemGroup>
 
   <PropertyGroup>

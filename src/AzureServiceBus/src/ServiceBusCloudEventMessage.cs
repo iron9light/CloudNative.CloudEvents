@@ -6,9 +6,9 @@ using Microsoft.Azure.ServiceBus;
 
 namespace CloudNative.CloudEvents.AzureServiceBus
 {
-    public class CloudEventMessage : Message
+    public class ServiceBusCloudEventMessage : Message
     {
-        public CloudEventMessage(CloudEvent cloudEvent, ICloudEventFormatter formatter)
+        public ServiceBusCloudEventMessage(CloudEvent cloudEvent, ICloudEventFormatter formatter)
         {
             Body = formatter.EncodeStructuredEvent(cloudEvent, out var contentType);
             ContentType = contentType.MediaType;
@@ -16,7 +16,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             MapHeaders(cloudEvent);
         }
 
-        public CloudEventMessage(CloudEvent cloudEvent)
+        public ServiceBusCloudEventMessage(CloudEvent cloudEvent)
         {
             switch (cloudEvent.Data)
             {
