@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Mime;
-using System.Text;
+using System.Threading.Tasks;
 
 using FluentAssertions;
 
@@ -11,14 +11,37 @@ namespace CloudNative.CloudEvents.Json.Tests
 {
     public class JsonCloudEventFormatterTests
     {
-        private readonly string _json = File.ReadAllText("event.json");
+        private readonly string _jsonPath = "event.json";
 
         private readonly JsonCloudEventFormatter<CustomData> _formatter = new JsonCloudEventFormatter<CustomData>();
 
         [Fact]
         public void ReserializeTest()
         {
-            var cloudEvent = _formatter.DecodeStructuredEvent(Encoding.UTF8.GetBytes(_json));
+            var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
+            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
+            var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
+
+            cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
+            cloudEvent.Type.Should().Be(cloudEvent2.Type);
+            cloudEvent.Source.Should().Be(cloudEvent2.Source);
+            cloudEvent.Id.Should().Be(cloudEvent2.Id);
+            (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
+            cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
+            cloudEvent.Data.Should().BeOfType<CustomData>();
+            cloudEvent2.Data.Should().BeOfType<CustomData>();
+            cloudEvent.Data.Should().Be(cloudEvent2.Data);
+        }
+
+        [Fact]
+        public async Task ReserializeAsyncTest()
+        {
+            CloudEvent cloudEvent;
+            using (var stream = OpenJsonStream())
+            {
+                cloudEvent = await _formatter.DecodeStructuredEventAsync(stream);
+            }
+
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
@@ -36,7 +59,7 @@ namespace CloudNative.CloudEvents.Json.Tests
         [Fact]
         public void ReserializeTestV0_3toV0_1()
         {
-            var cloudEvent = _formatter.DecodeStructuredEvent(Encoding.UTF8.GetBytes(_json));
+            var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
             cloudEvent.SpecVersion = CloudEventsSpecVersion.V0_1;
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
@@ -55,7 +78,7 @@ namespace CloudNative.CloudEvents.Json.Tests
         [Fact]
         public void StructuredParseSuccess()
         {
-            var cloudEvent = _formatter.DecodeStructuredEvent(Encoding.UTF8.GetBytes(_json));
+            var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
             cloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.V1_0);
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
@@ -73,7 +96,7 @@ namespace CloudNative.CloudEvents.Json.Tests
         public void StructuredParseWithExtensionsSuccess()
         {
             var cloudEvent = _formatter.DecodeStructuredEvent(
-                Encoding.UTF8.GetBytes(_json),
+                ReadJsonFile(),
                 new ComExampleExtension1Extension(),
                 new ComExampleExtension2Extension());
             cloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.V1_0);
@@ -87,5 +110,11 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Extension<ComExampleExtension1Extension>().ComExampleExtension1.Should().Be("value");
             cloudEvent.Extension<ComExampleExtension2Extension>().ComExampleExtension2.Should().Be(new CustomData { OtherValue = 5 });
         }
+
+        private byte[] ReadJsonFile()
+            => File.ReadAllBytes(_jsonPath);
+
+        private Stream OpenJsonStream()
+            => File.OpenRead(_jsonPath);
     }
 }

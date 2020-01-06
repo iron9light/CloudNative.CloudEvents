@@ -15,6 +15,9 @@ namespace CloudNative.CloudEvents.Json
     {
         private readonly JsonEventFormatter _jsonEventFormatter = new JsonEventFormatter();
 
+        public async Task<CloudEvent> DecodeStructuredEventAsync(Stream data, params ICloudEventExtension[] extensions)
+            => await DecodeStructuredEventAsync(data, (IEnumerable<ICloudEventExtension>)extensions);
+
         public async Task<CloudEvent> DecodeStructuredEventAsync(Stream data, IEnumerable<ICloudEventExtension> extensions)
         {
             JObject jObject;
@@ -28,9 +31,7 @@ namespace CloudNative.CloudEvents.Json
         }
 
         public CloudEvent DecodeStructuredEvent(Stream data, params ICloudEventExtension[] extensions)
-        {
-            return DecodeStructuredEvent(data, (IEnumerable<ICloudEventExtension>)extensions);
-        }
+            => DecodeStructuredEvent(data, (IEnumerable<ICloudEventExtension>)extensions);
 
         public CloudEvent DecodeStructuredEvent(Stream data, IEnumerable<ICloudEventExtension> extensions)
         {
@@ -45,9 +46,7 @@ namespace CloudNative.CloudEvents.Json
         }
 
         public CloudEvent DecodeStructuredEvent(byte[] data, params ICloudEventExtension[] extensions)
-        {
-            return DecodeStructuredEvent(data, (IEnumerable<ICloudEventExtension>)extensions);
-        }
+            => DecodeStructuredEvent(data, (IEnumerable<ICloudEventExtension>)extensions);
 
         public CloudEvent DecodeStructuredEvent(byte[] data, IEnumerable<ICloudEventExtension> extensions)
         {
@@ -78,9 +77,7 @@ namespace CloudNative.CloudEvents.Json
         }
 
         public byte[] EncodeStructuredEvent(CloudEvent cloudEvent, out ContentType contentType)
-        {
-            return _jsonEventFormatter.EncodeStructuredEvent(cloudEvent, out contentType);
-        }
+            => _jsonEventFormatter.EncodeStructuredEvent(cloudEvent, out contentType);
 
         public object? DecodeAttribute(CloudEventsSpecVersion specVersion, string name, byte[] data, IEnumerable<ICloudEventExtension> extensions)
         {
@@ -93,8 +90,6 @@ namespace CloudNative.CloudEvents.Json
         }
 
         public byte[] EncodeAttribute(CloudEventsSpecVersion specVersion, string name, object value, IEnumerable<ICloudEventExtension> extensions)
-        {
-            return _jsonEventFormatter.EncodeAttribute(specVersion, name, value, extensions);
-        }
+            => _jsonEventFormatter.EncodeAttribute(specVersion, name, value, extensions);
     }
 }
