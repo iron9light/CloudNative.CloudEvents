@@ -23,21 +23,26 @@ namespace CloudNative.CloudEvents.Json.Tests
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
-            cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
-            cloudEvent.Type.Should().Be(cloudEvent2.Type);
-            cloudEvent.Source.Should().Be(cloudEvent2.Source);
-            cloudEvent.Id.Should().Be(cloudEvent2.Id);
-#pragma warning disable NullConditionalAssertion // Code Smell
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
-#pragma warning restore NullConditionalAssertion // Code Smell
-            cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
-            cloudEvent.Data.Should().BeOfType<CustomData>();
-            cloudEvent2.Data.Should().BeOfType<CustomData>();
-            cloudEvent.Data.Should().Be(cloudEvent2.Data);
+            AssertCloudEvent(cloudEvent, cloudEvent2);
         }
 
         [Fact]
-        public async Task ReserializeAsyncTest()
+        public void ReserializeStreamTest()
+        {
+            CloudEvent cloudEvent;
+            using (var stream = OpenJsonStream())
+            {
+                cloudEvent = _formatter.DecodeStructuredEvent(stream);
+            }
+
+            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
+            var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
+
+            AssertCloudEvent(cloudEvent, cloudEvent2);
+        }
+
+        [Fact]
+        public async Task ReserializeStreamAsyncTest()
         {
             CloudEvent cloudEvent;
             using (var stream = OpenJsonStream())
@@ -48,17 +53,7 @@ namespace CloudNative.CloudEvents.Json.Tests
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
-            cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
-            cloudEvent.Type.Should().Be(cloudEvent2.Type);
-            cloudEvent.Source.Should().Be(cloudEvent2.Source);
-            cloudEvent.Id.Should().Be(cloudEvent2.Id);
-#pragma warning disable NullConditionalAssertion // Code Smell
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
-#pragma warning restore NullConditionalAssertion // Code Smell
-            cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
-            cloudEvent.Data.Should().BeOfType<CustomData>();
-            cloudEvent2.Data.Should().BeOfType<CustomData>();
-            cloudEvent.Data.Should().Be(cloudEvent2.Data);
+            AssertCloudEvent(cloudEvent, cloudEvent2);
         }
 
         [Fact]
@@ -71,17 +66,7 @@ namespace CloudNative.CloudEvents.Json.Tests
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
-            cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
-            cloudEvent.Type.Should().Be(cloudEvent2.Type);
-            cloudEvent.Source.Should().Be(cloudEvent2.Source);
-            cloudEvent.Id.Should().Be(cloudEvent2.Id);
-#pragma warning disable NullConditionalAssertion // Code Smell
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
-#pragma warning restore NullConditionalAssertion // Code Smell
-            cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
-            cloudEvent.Data.Should().BeOfType<CustomData>();
-            cloudEvent2.Data.Should().BeOfType<CustomData>();
-            cloudEvent.Data.Should().Be(cloudEvent2.Data);
+            AssertCloudEvent(cloudEvent, cloudEvent2);
         }
 
         [Fact]
@@ -127,5 +112,20 @@ namespace CloudNative.CloudEvents.Json.Tests
 
         private Stream OpenJsonStream()
             => File.OpenRead(_jsonPath);
+
+        private void AssertCloudEvent(CloudEvent expected, CloudEvent actual)
+        {
+            actual.SpecVersion.Should().Be(expected.SpecVersion);
+            actual.Type.Should().Be(expected.Type);
+            actual.Source.Should().Be(expected.Source);
+            actual.Id.Should().Be(expected.Id);
+#pragma warning disable NullConditionalAssertion // Code Smell
+            (actual.Time?.ToUniversalTime()).Should().Be(expected.Time?.ToUniversalTime());
+#pragma warning restore NullConditionalAssertion // Code Smell
+            actual.DataContentType.Should().Be(expected.DataContentType);
+            actual.Data.Should().BeOfType<CustomData>();
+            expected.Data.Should().BeOfType<CustomData>();
+            actual.Data.Should().Be(expected.Data);
+        }
     }
 }
