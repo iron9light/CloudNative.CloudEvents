@@ -7,7 +7,7 @@ namespace CloudNative.CloudEvents.Json.Tests
     {
         private const string ExtensionAttribute = "comexampleextension2";
 
-        private IDictionary<string, object> attributes = new Dictionary<string, object>();
+        private IDictionary<string, object> _attributes = new Dictionary<string, object>();
 
         public ComExampleExtension2Extension()
         {
@@ -15,25 +15,25 @@ namespace CloudNative.CloudEvents.Json.Tests
 
         public CustomData ComExampleExtension2
         {
-            get => (CustomData)attributes[ExtensionAttribute];
-            set => attributes[ExtensionAttribute] = value;
+            get => (CustomData)_attributes[ExtensionAttribute];
+            set => _attributes[ExtensionAttribute] = value;
         }
 
         void ICloudEventExtension.Attach(CloudEvent cloudEvent)
         {
             var eventAttributes = cloudEvent.GetAttributes();
-            if (attributes == eventAttributes)
+            if (_attributes == eventAttributes)
             {
                 // already done
                 return;
             }
 
-            foreach (var attr in attributes)
+            foreach (var attr in _attributes)
             {
                 eventAttributes[attr.Key] = attr.Value;
             }
 
-            attributes = eventAttributes;
+            _attributes = eventAttributes;
         }
 
         bool ICloudEventExtension.ValidateAndNormalize(string key, ref object value)

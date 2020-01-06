@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -22,19 +23,26 @@ namespace CloudNative.CloudEvents.Json.Tests
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
-            cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
-            cloudEvent.Type.Should().Be(cloudEvent2.Type);
-            cloudEvent.Source.Should().Be(cloudEvent2.Source);
-            cloudEvent.Id.Should().Be(cloudEvent2.Id);
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
-            cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
-            cloudEvent.Data.Should().BeOfType<CustomData>();
-            cloudEvent2.Data.Should().BeOfType<CustomData>();
-            cloudEvent.Data.Should().Be(cloudEvent2.Data);
+            AssertCloudEvent(cloudEvent, cloudEvent2);
         }
 
         [Fact]
-        public async Task ReserializeAsyncTest()
+        public void ReserializeStreamTest()
+        {
+            CloudEvent cloudEvent;
+            using (var stream = OpenJsonStream())
+            {
+                cloudEvent = _formatter.DecodeStructuredEvent(stream);
+            }
+
+            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
+            var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
+
+            AssertCloudEvent(cloudEvent, cloudEvent2);
+        }
+
+        [Fact]
+        public async Task ReserializeStreamAsyncTest()
         {
             CloudEvent cloudEvent;
             using (var stream = OpenJsonStream())
@@ -45,34 +53,20 @@ namespace CloudNative.CloudEvents.Json.Tests
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
-            cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
-            cloudEvent.Type.Should().Be(cloudEvent2.Type);
-            cloudEvent.Source.Should().Be(cloudEvent2.Source);
-            cloudEvent.Id.Should().Be(cloudEvent2.Id);
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
-            cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
-            cloudEvent.Data.Should().BeOfType<CustomData>();
-            cloudEvent2.Data.Should().BeOfType<CustomData>();
-            cloudEvent.Data.Should().Be(cloudEvent2.Data);
+            AssertCloudEvent(cloudEvent, cloudEvent2);
         }
 
         [Fact]
+#pragma warning disable CA1707 // Identifiers should not contain underscores
         public void ReserializeTestV0_3toV0_1()
+#pragma warning restore CA1707 // Identifiers should not contain underscores
         {
             var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
             cloudEvent.SpecVersion = CloudEventsSpecVersion.V0_1;
             var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
             var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
 
-            cloudEvent.SpecVersion.Should().Be(cloudEvent2.SpecVersion);
-            cloudEvent.Type.Should().Be(cloudEvent2.Type);
-            cloudEvent.Source.Should().Be(cloudEvent2.Source);
-            cloudEvent.Id.Should().Be(cloudEvent2.Id);
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
-            cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
-            cloudEvent.Data.Should().BeOfType<CustomData>();
-            cloudEvent2.Data.Should().BeOfType<CustomData>();
-            cloudEvent.Data.Should().Be(cloudEvent2.Data);
+            AssertCloudEvent(cloudEvent, cloudEvent2);
         }
 
         [Fact]
@@ -83,7 +77,8 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(DateTime.Parse("2018-04-05T17:31:00Z").ToUniversalTime());
+            cloudEvent.Time.Should().NotBeNull();
+            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
             cloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
             cloudEvent.Data.Should().Be(new CustomData { OtherValue = 6 });
 
@@ -103,7 +98,8 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(DateTime.Parse("2018-04-05T17:31:00Z").ToUniversalTime());
+            cloudEvent.Time.Should().NotBeNull();
+            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
             cloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
             cloudEvent.Data.Should().Be(new CustomData { OtherValue = 6 });
 
@@ -116,5 +112,20 @@ namespace CloudNative.CloudEvents.Json.Tests
 
         private Stream OpenJsonStream()
             => File.OpenRead(_jsonPath);
+
+        private void AssertCloudEvent(CloudEvent expected, CloudEvent actual)
+        {
+            actual.SpecVersion.Should().Be(expected.SpecVersion);
+            actual.Type.Should().Be(expected.Type);
+            actual.Source.Should().Be(expected.Source);
+            actual.Id.Should().Be(expected.Id);
+#pragma warning disable NullConditionalAssertion // Code Smell
+            (actual.Time?.ToUniversalTime()).Should().Be(expected.Time?.ToUniversalTime());
+#pragma warning restore NullConditionalAssertion // Code Smell
+            actual.DataContentType.Should().Be(expected.DataContentType);
+            actual.Data.Should().BeOfType<CustomData>();
+            expected.Data.Should().BeOfType<CustomData>();
+            actual.Data.Should().Be(expected.Data);
+        }
     }
 }

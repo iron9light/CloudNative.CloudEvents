@@ -81,7 +81,12 @@ namespace CloudNative.CloudEvents.Json
 
         public object? DecodeAttribute(CloudEventsSpecVersion specVersion, string name, byte[] data, IEnumerable<ICloudEventExtension> extensions)
         {
-            if (name.Equals(CloudEventAttributes.DataAttributeName(specVersion)))
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (name.Equals(CloudEventAttributes.DataAttributeName(specVersion), StringComparison.Ordinal))
             {
                 return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(data));
             }

@@ -10,6 +10,16 @@ namespace CloudNative.CloudEvents.AzureServiceBus
     {
         public ServiceBusCloudEventMessage(CloudEvent cloudEvent, ICloudEventFormatter formatter)
         {
+            if (cloudEvent == null)
+            {
+                throw new ArgumentNullException(nameof(cloudEvent));
+            }
+
+            if (formatter == null)
+            {
+                throw new ArgumentNullException(nameof(formatter));
+            }
+
             Body = formatter.EncodeStructuredEvent(cloudEvent, out var contentType);
             ContentType = contentType.MediaType;
             MessageId = cloudEvent.Id;
@@ -18,6 +28,11 @@ namespace CloudNative.CloudEvents.AzureServiceBus
 
         public ServiceBusCloudEventMessage(CloudEvent cloudEvent)
         {
+            if (cloudEvent == null)
+            {
+                throw new ArgumentNullException(nameof(cloudEvent));
+            }
+
             switch (cloudEvent.Data)
             {
                 case byte[] bytes:
@@ -27,9 +42,12 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                     Body = stream.ToArray();
                     break;
                 case Stream stream:
-                    var buffer = new MemoryStream();
-                    stream.CopyTo(buffer);
-                    Body = buffer.ToArray();
+                    using (var buffer = new MemoryStream())
+                    {
+                        stream.CopyTo(buffer);
+                        Body = buffer.ToArray();
+                    }
+
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported data type: {cloudEvent.Data.GetType().FullName}");

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Net.Mime;
 using System.Text;
 
@@ -59,7 +60,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
             receivedCloudEvent.Subject.Should().Be("123");
             receivedCloudEvent.Id.Should().Be("A234-1234-1234");
             receivedCloudEvent.Time.Should().NotBeNull();
-            receivedCloudEvent.Time?.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z").ToUniversalTime());
+            receivedCloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
             receivedCloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
 
             if (contentMode == ContentMode.Structured)

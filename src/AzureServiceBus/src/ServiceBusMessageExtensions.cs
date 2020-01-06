@@ -12,6 +12,11 @@ namespace CloudNative.CloudEvents.AzureServiceBus
 
         public static bool IsCloudEvent(this Message message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             return (message.ContentType != null && message.ContentType.StartsWith(CloudEvent.MediaType, StringComparison.InvariantCultureIgnoreCase)) ||
                 message.UserProperties.ContainsKey(Constants.SpecVersion2PropertyKey) ||
                 message.UserProperties.ContainsKey(Constants.SpecVersion1PropertyKey);
@@ -19,11 +24,21 @@ namespace CloudNative.CloudEvents.AzureServiceBus
 
         public static CloudEvent ToCloudEvent(this Message message, params ICloudEventExtension[] extensions)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             return InternalToCloudEvent(message, null, extensions);
         }
 
         public static CloudEvent ToCloudEvent(this Message message, ICloudEventFormatter formatter, params ICloudEventExtension[] extensions)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             return InternalToCloudEvent(message, formatter, extensions);
         }
 
@@ -71,7 +86,9 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             {
                 if (property.Key.StartsWith(Constants.PropertyKeyPrefix, StringComparison.InvariantCultureIgnoreCase))
                 {
+#pragma warning disable CA1308 // Normalize strings to uppercase
                     var key = property.Key.Substring(Constants.PropertyKeyPrefix.Length).ToLowerInvariant();
+#pragma warning restore CA1308 // Normalize strings to uppercase
 
                     attributes[key] = property.Value;
                 }

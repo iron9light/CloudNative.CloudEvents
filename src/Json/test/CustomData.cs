@@ -17,8 +17,13 @@ namespace CloudNative.CloudEvents.Json.Tests
             return false;
         }
 
-        public bool Equals(CustomData other)
+        public bool Equals(CustomData? other)
         {
+            if (other == null)
+            {
+                return false;
+            }
+
             return OtherValue == other.OtherValue;
         }
 

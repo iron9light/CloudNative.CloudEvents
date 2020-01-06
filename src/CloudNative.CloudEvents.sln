@@ -2,17 +2,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudNative.CloudEvents.AzureServiceBus", "src\AzureServiceBus\src\CloudNative.CloudEvents.AzureServiceBus.csproj", "{F18F9670-E7FF-4D7D-8921-3DB7CB5F89F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudNative.CloudEvents.AzureServiceBus", "AzureServiceBus\src\CloudNative.CloudEvents.AzureServiceBus.csproj", "{F18F9670-E7FF-4D7D-8921-3DB7CB5F89F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudNative.CloudEvents.AzureServiceBus.Tests", "src\AzureServiceBus\test\CloudNative.CloudEvents.AzureServiceBus.Tests.csproj", "{81DACE3D-C4DE-4EF5-A94B-9405B05D89FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudNative.CloudEvents.AzureServiceBus.Tests", "AzureServiceBus\test\CloudNative.CloudEvents.AzureServiceBus.Tests.csproj", "{81DACE3D-C4DE-4EF5-A94B-9405B05D89FE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureServiceBus", "AzureServiceBus", "{3B6CD2C7-BD40-433D-B3B7-C75B31DF7158}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Json", "Json", "{0889BC4F-C2CF-45E3-8A34-0AE62C80BBF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudNative.CloudEvents.Json", "src\Json\src\CloudNative.CloudEvents.Json.csproj", "{D708681D-0567-43F0-9151-A84FE98271EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudNative.CloudEvents.Json", "Json\src\CloudNative.CloudEvents.Json.csproj", "{D708681D-0567-43F0-9151-A84FE98271EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudNative.CloudEvents.Json.Tests", "src\Json\test\CloudNative.CloudEvents.Json.Tests.csproj", "{CA446B3B-9E22-498E-B77C-56110B03F0E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudNative.CloudEvents.Json.Tests", "Json\test\CloudNative.CloudEvents.Json.Tests.csproj", "{CA446B3B-9E22-498E-B77C-56110B03F0E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
