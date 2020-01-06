@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -26,7 +27,9 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Type.Should().Be(cloudEvent2.Type);
             cloudEvent.Source.Should().Be(cloudEvent2.Source);
             cloudEvent.Id.Should().Be(cloudEvent2.Id);
+#pragma warning disable NullConditionalAssertion // Code Smell
             (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
+#pragma warning restore NullConditionalAssertion // Code Smell
             cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
             cloudEvent.Data.Should().BeOfType<CustomData>();
             cloudEvent2.Data.Should().BeOfType<CustomData>();
@@ -49,7 +52,9 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Type.Should().Be(cloudEvent2.Type);
             cloudEvent.Source.Should().Be(cloudEvent2.Source);
             cloudEvent.Id.Should().Be(cloudEvent2.Id);
+#pragma warning disable NullConditionalAssertion // Code Smell
             (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
+#pragma warning restore NullConditionalAssertion // Code Smell
             cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
             cloudEvent.Data.Should().BeOfType<CustomData>();
             cloudEvent2.Data.Should().BeOfType<CustomData>();
@@ -57,7 +62,9 @@ namespace CloudNative.CloudEvents.Json.Tests
         }
 
         [Fact]
+#pragma warning disable CA1707 // Identifiers should not contain underscores
         public void ReserializeTestV0_3toV0_1()
+#pragma warning restore CA1707 // Identifiers should not contain underscores
         {
             var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
             cloudEvent.SpecVersion = CloudEventsSpecVersion.V0_1;
@@ -68,7 +75,9 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Type.Should().Be(cloudEvent2.Type);
             cloudEvent.Source.Should().Be(cloudEvent2.Source);
             cloudEvent.Id.Should().Be(cloudEvent2.Id);
+#pragma warning disable NullConditionalAssertion // Code Smell
             (cloudEvent.Time?.ToUniversalTime()).Should().Be(cloudEvent2.Time?.ToUniversalTime());
+#pragma warning restore NullConditionalAssertion // Code Smell
             cloudEvent.DataContentType.Should().Be(cloudEvent2.DataContentType);
             cloudEvent.Data.Should().BeOfType<CustomData>();
             cloudEvent2.Data.Should().BeOfType<CustomData>();
@@ -83,7 +92,8 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(DateTime.Parse("2018-04-05T17:31:00Z").ToUniversalTime());
+            cloudEvent.Time.Should().NotBeNull();
+            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
             cloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
             cloudEvent.Data.Should().Be(new CustomData { OtherValue = 6 });
 
@@ -103,7 +113,8 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");
-            (cloudEvent.Time?.ToUniversalTime()).Should().Be(DateTime.Parse("2018-04-05T17:31:00Z").ToUniversalTime());
+            cloudEvent.Time.Should().NotBeNull();
+            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
             cloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
             cloudEvent.Data.Should().Be(new CustomData { OtherValue = 6 });
 
