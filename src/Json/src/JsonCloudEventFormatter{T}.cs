@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
+using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,6 +14,18 @@ namespace CloudNative.CloudEvents.Json
         : ICloudEventFormatter
     {
         private readonly JsonEventFormatter _jsonEventFormatter = new JsonEventFormatter();
+
+        public async Task<CloudEvent> DecodeStructuredEventAsync(Stream data, IEnumerable<ICloudEventExtension> extensions)
+        {
+            JObject jObject;
+
+            using (var jsonReader = new JsonTextReader(new StreamReader(data, Encoding.UTF8, true, 8192, true)))
+            {
+                jObject = await JObject.LoadAsync(jsonReader);
+            }
+
+            return DecodeJObject(jObject, extensions);
+        }
 
         public CloudEvent DecodeStructuredEvent(Stream data, params ICloudEventExtension[] extensions)
         {

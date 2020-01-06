@@ -8,17 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19351-01" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.26" PrivateAssets="All"/>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.28" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All"/>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.0.0.9566" PrivateAssets="All"/>
-    <PackageReference Include="coverlet.msbuild" Version="2.7.0" PrivateAssets="All"/>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.113" PrivateAssets="All"/>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.1.0.13383" PrivateAssets="All"/>
+    <PackageReference Include="coverlet.msbuild" Version="2.8.0" PrivateAssets="All"/>
   </ItemGroup>
 
   <PropertyGroup>
