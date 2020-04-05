@@ -6,22 +6,42 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
+using Newtonsoft.Json;
+
 using Xunit;
 
 namespace CloudNative.CloudEvents.Json.Tests
 {
     public class JsonCloudEventFormatterTests
+        : JsonCloudEventFormatterTestsBase
+    {
+        protected override JsonCloudEventFormatter<CustomData> Formatter { get; }
+            = new JsonCloudEventFormatter<CustomData>();
+    }
+
+    public class JsonCloudEventFormatterWithSettingsTests
+    : JsonCloudEventFormatterTestsBase
+    {
+        protected override JsonCloudEventFormatter<CustomData> Formatter { get; }
+            = new JsonCloudEventFormatter<CustomData>(new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.DateTimeOffset,
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            });
+    }
+
+    public abstract class JsonCloudEventFormatterTestsBase
     {
         private readonly string _jsonPath = "event.json";
 
-        private readonly JsonCloudEventFormatter<CustomData> _formatter = new JsonCloudEventFormatter<CustomData>();
+        protected abstract JsonCloudEventFormatter<CustomData> Formatter { get; }
 
         [Fact]
         public void ReserializeTest()
         {
-            var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
-            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
-            var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
+            var cloudEvent = Formatter.DecodeStructuredEvent(ReadJsonFile());
+            var jsonData = Formatter.EncodeStructuredEvent(cloudEvent, out _);
+            var cloudEvent2 = Formatter.DecodeStructuredEvent(jsonData);
 
             AssertCloudEvent(cloudEvent, cloudEvent2);
         }
@@ -32,11 +52,11 @@ namespace CloudNative.CloudEvents.Json.Tests
             CloudEvent cloudEvent;
             using (var stream = OpenJsonStream())
             {
-                cloudEvent = _formatter.DecodeStructuredEvent(stream);
+                cloudEvent = Formatter.DecodeStructuredEvent(stream);
             }
 
-            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
-            var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
+            var jsonData = Formatter.EncodeStructuredEvent(cloudEvent, out _);
+            var cloudEvent2 = Formatter.DecodeStructuredEvent(jsonData);
 
             AssertCloudEvent(cloudEvent, cloudEvent2);
         }
@@ -47,11 +67,11 @@ namespace CloudNative.CloudEvents.Json.Tests
             CloudEvent cloudEvent;
             using (var stream = OpenJsonStream())
             {
-                cloudEvent = await _formatter.DecodeStructuredEventAsync(stream);
+                cloudEvent = await Formatter.DecodeStructuredEventAsync(stream);
             }
 
-            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
-            var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
+            var jsonData = Formatter.EncodeStructuredEvent(cloudEvent, out _);
+            var cloudEvent2 = Formatter.DecodeStructuredEvent(jsonData);
 
             AssertCloudEvent(cloudEvent, cloudEvent2);
         }
@@ -61,10 +81,10 @@ namespace CloudNative.CloudEvents.Json.Tests
         public void ReserializeTestV0_3toV0_1()
 #pragma warning restore CA1707 // Identifiers should not contain underscores
         {
-            var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
+            var cloudEvent = Formatter.DecodeStructuredEvent(ReadJsonFile());
             cloudEvent.SpecVersion = CloudEventsSpecVersion.V0_1;
-            var jsonData = _formatter.EncodeStructuredEvent(cloudEvent, out _);
-            var cloudEvent2 = _formatter.DecodeStructuredEvent(jsonData);
+            var jsonData = Formatter.EncodeStructuredEvent(cloudEvent, out _);
+            var cloudEvent2 = Formatter.DecodeStructuredEvent(jsonData);
 
             AssertCloudEvent(cloudEvent, cloudEvent2);
         }
@@ -72,13 +92,13 @@ namespace CloudNative.CloudEvents.Json.Tests
         [Fact]
         public void StructuredParseSuccess()
         {
-            var cloudEvent = _formatter.DecodeStructuredEvent(ReadJsonFile());
+            var cloudEvent = Formatter.DecodeStructuredEvent(ReadJsonFile());
             cloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.V1_0);
             cloudEvent.Type.Should().Be("com.github.pull.create");
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");
             cloudEvent.Time.Should().NotBeNull();
-            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
+            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTimeOffset.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).UtcDateTime);
             cloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
             cloudEvent.Data.Should().Be(new CustomData { OtherValue = 6 });
 
@@ -90,7 +110,7 @@ namespace CloudNative.CloudEvents.Json.Tests
         [Fact]
         public void StructuredParseWithExtensionsSuccess()
         {
-            var cloudEvent = _formatter.DecodeStructuredEvent(
+            var cloudEvent = Formatter.DecodeStructuredEvent(
                 ReadJsonFile(),
                 new ComExampleExtension1Extension(),
                 new ComExampleExtension2Extension());
@@ -99,7 +119,7 @@ namespace CloudNative.CloudEvents.Json.Tests
             cloudEvent.Source.Should().Be(new Uri("https://github.com/cloudevents/spec/pull"));
             cloudEvent.Id.Should().Be("A234-1234-1234");
             cloudEvent.Time.Should().NotBeNull();
-            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
+            cloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTimeOffset.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).UtcDateTime);
             cloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
             cloudEvent.Data.Should().Be(new CustomData { OtherValue = 6 });
 

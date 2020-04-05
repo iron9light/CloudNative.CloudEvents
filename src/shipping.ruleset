@@ -5,11 +5,19 @@
     <!-- XmlCommentAnalysisDisabled -->
     <Rule Id="SA0001"  Action="None" />
   </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.CSharp.SpacingRules">
+    <!-- ClosingParenthesisMustBeSpacedCorrectly -->
+    <Rule Id="SA1009" Action="None" />
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.ReadabilityRules">
     <!-- PrefixLocalCallsWithThis -->
     <Rule Id="SA1101" Action="None" />
     <!-- DoNotPrefixLocalMembersWithThis -->
     <Rule Id="SX1101" Action="Warning" />
+    <!-- ClosingParenthesisMustBeOnLineOfLastParameter -->
+    <Rule Id="SA1111" Action="None" />
+    <!-- ClosingParenthesisMustBeOnLineOfOpeningParenthesis -->
+    <Rule Id="SA1112" Action="None" />
     <!-- ParameterMustNotSpanMultipleLines -->
     <Rule Id="SA1118" Action="None" />
   </Rules>
@@ -22,6 +30,10 @@
     <Rule Id="SA1309" Action="None" />
     <!-- FieldNamesMustBeginWithUnderscore -->
     <Rule Id="SX1309" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.CSharp.MaintainabilityRules">
+    <!-- FileMayOnlyContainASingleType -->
+    <Rule Id="SA1402" Action="None" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.DocumentationRules">
     <!-- ElementsMustBeDocumented -->

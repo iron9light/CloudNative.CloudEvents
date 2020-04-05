@@ -19,7 +19,16 @@ Generic Json extension for [CloudNative.CloudEvents](https://github.com/cloudeve
 [![NuGet](https://img.shields.io/nuget/v/CloudNative.CloudEvents.Json.svg)](https://www.nuget.org/packages/CloudNative.CloudEvents.Json/)
 
 ```csharp
-var formatter = new JsonCloudEventFormatter<MyData>();
+var jsonSerializerSettings = new JsonSerializerSettings
+{
+    DateParseHandling = DateParseHandling.DateTimeOffset,
+    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+};
+var formatter = new JsonCloudEventFormatter<MyData>(jsonSerializerSettings); // JsonSerializerSettings is optional
 var cloudEvent = formatter.DecodeStructuredEvent(jsonData);
 cloudEvent.Data.Should().BeOfType<MyData>(); // The type of Data is MyData type, but not JToken
 ```
+
+**Notice**
+
+The attribute value may be a [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset) if the `JsonSerializerSettings.DateParseHandling` is `DateParseHandling.DateTimeOffset`. But the attribute value for `time` will always be [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime).
