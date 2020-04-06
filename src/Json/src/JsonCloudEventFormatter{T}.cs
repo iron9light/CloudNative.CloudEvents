@@ -207,7 +207,15 @@ namespace CloudNative.CloudEvents.Json
                 }
             }
 
-            return Encoding.UTF8.GetBytes(jObject.ToString());
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new StreamWriter(stream))
+                {
+                    _serializer.Serialize(writer, jObject);
+                }
+
+                return stream.ToArray();
+            }
         }
 
         public object? DecodeAttribute(CloudEventsSpecVersion specVersion, string name, byte[] data, IEnumerable<ICloudEventExtension> extensions)
@@ -272,7 +280,7 @@ namespace CloudNative.CloudEvents.Json
 
             using (var stream = new MemoryStream())
             {
-                using (var writer = new StreamWriter(stream, Encoding.UTF8))
+                using (var writer = new StreamWriter(stream))
                 {
                     var written = false;
                     if (name.Equals(CloudEventAttributes.DataAttributeName(specVersion), StringComparison.OrdinalIgnoreCase) &&
