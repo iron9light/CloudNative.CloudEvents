@@ -79,7 +79,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus
         {
             var specVersion = GetCloudEventsSpecVersion(message);
             var cloudEventType = GetAttribute(message, CloudEventAttributes.TypeAttributeName(specVersion));
-            var cloudEventSource = new Uri(GetAttribute(message, CloudEventAttributes.SourceAttributeName(specVersion)));
+            var cloudEventSource = new Uri(GetAttribute(message, CloudEventAttributes.SourceAttributeName(specVersion))!);
             var cloudEvent = new CloudEvent(specVersion, cloudEventType, cloudEventSource, id: message.MessageId, extensions: extensions);
             var attributes = cloudEvent.GetAttributes();
             foreach (var property in message.UserProperties)
