@@ -14,6 +14,9 @@
 
 ## CloudNative.CloudEvents.Json
 
+> The features provide by this package have been implemented officially after version 2.0.
+> Please use [CloudNative.CloudEvents.NewtonsoftJson](https://www.nuget.org/packages/CloudNative.CloudEvents.NewtonsoftJson/).
+
 Generic Json extension for [CloudNative.CloudEvents](https://github.com/cloudevents/spec)
 
 [![NuGet](https://img.shields.io/nuget/v/CloudNative.CloudEvents.Json.svg)](https://www.nuget.org/packages/CloudNative.CloudEvents.Json/)
