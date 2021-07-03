@@ -25,12 +25,6 @@ variables:
   value: 'iron9light/CloudNative.CloudEvents'
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET Core 3.x'
-  inputs:
-    packageType: sdk
-    version: 3.x
-
 - script: dotnet tool install --tool-path . nbgv
   displayName: 'Install NBGV tool'
 
@@ -48,7 +42,7 @@ steps:
   displayName: 'SonarScanner begin'
   condition: and(succeeded(), not(variables['System.PullRequest.SourceBranch']))
 
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet build --configuration $(buildConfiguration) -p:RepositoryBranch="$(Build.SourceBranchName)"
   displayName: 'dotnet build $(buildConfiguration)'
   workingDirectory: src
 
@@ -59,6 +53,13 @@ steps:
     projects: '**/*.sln'
     arguments: '--configuration $(buildConfiguration) --no-build /p:CollectCoverage=true'
     workingDirectory: src
+
+- task: JavaToolInstaller@0
+  displayName: 'install Java 11 for sonarscanner'
+  inputs:
+    versionSpec: "11"
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
 
 - script: dotnet-sonarscanner end /d:sonar.login="$(sonar.token)"
   displayName: 'SonarScanner end'
@@ -96,3 +97,4 @@ steps:
     nuGetFeedType: external
     publishFeedCredentials: GitHubPackagesNuGetConnection
   condition: and(succeeded(), not(variables['System.PullRequest.SourceBranch']))
+  continueOnError: true

@@ -1,9 +1,13 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Mime;
-using System.Text;
+
+using CloudNative.CloudEvents.NewtonsoftJson;
 
 using FluentAssertions;
+
+using Microsoft.Azure.ServiceBus;
 
 using Xunit;
 
@@ -11,12 +15,14 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
 {
     public class CloudEventMessageTests
     {
+        private readonly CloudEventFormatter _formatter = new JsonEventFormatter();
+
         [Fact]
 #pragma warning disable S2699 // Tests should include assertions
         public void ServiceBusStructuredMessageTest()
 #pragma warning restore S2699 // Tests should include assertions
         {
-            ServiceBusMessageTest(cloudEvent => new ServiceBusCloudEventMessage(cloudEvent, new JsonEventFormatter()), ContentMode.Structured);
+            ServiceBusMessageTest(cloudEvent => cloudEvent.ToServiceBusMessage(ContentMode.Structured, _formatter));
         }
 
         [Fact]
@@ -24,27 +30,23 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
         public void ServiceBusBinaryMessageTest()
 #pragma warning restore S2699 // Tests should include assertions
         {
-            ServiceBusMessageTest(cloudEvent => new ServiceBusCloudEventMessage(cloudEvent), ContentMode.Binary);
+            ServiceBusMessageTest(cloudEvent => cloudEvent.ToServiceBusMessage(ContentMode.Binary, _formatter));
         }
 
-        private void ServiceBusMessageTest(Func<CloudEvent, ServiceBusCloudEventMessage> event2message, ContentMode contentMode)
+        private void ServiceBusMessageTest(Func<CloudEvent, Message> event2message)
         {
             var data = "<much wow=\"xml\"/>";
-            var cloudEvent = new CloudEvent(
-                CloudEventsSpecVersion.V1_0,
-                "com.github.pull.create",
-                source: new Uri("https://github.com/cloudevents/spec/pull"),
-                subject: "123")
+            var cloudEvent = new CloudEvent
             {
+                Type = "com.github.pull.create",
+                Source = new Uri("https://github.com/cloudevents/spec/pull"),
+                Subject = "123",
                 Id = "A234-1234-1234",
-                Time = new DateTime(2018, 4, 5, 17, 31, 0, DateTimeKind.Utc),
-                DataContentType = new ContentType(MediaTypeNames.Text.Xml),
-                Data = contentMode == ContentMode.Structured ? (object)data : (object)Encoding.UTF8.GetBytes(data),
+                Time = new DateTimeOffset(2018, 4, 5, 17, 31, 0, TimeSpan.Zero),
+                DataContentType = MediaTypeNames.Text.Xml,
+                Data = data,
+                ["comexampleextension1"] = "value",
             };
-
-            var attrs = cloudEvent.GetAttributes();
-            attrs["comexampleextension1"] = "value";
-            attrs["comexampleextension2"] = new { othervalue = 5 };
 
             var message = event2message(cloudEvent);
             message.IsCloudEvent().Should().BeTrue();
@@ -52,7 +54,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
             var clonedMessage = message.Clone();
             clonedMessage.IsCloudEvent().Should().BeTrue();
 
-            var receivedCloudEvent = clonedMessage.ToCloudEvent();
+            var receivedCloudEvent = clonedMessage.ToCloudEvent(_formatter);
 
             receivedCloudEvent.SpecVersion.Should().Be(CloudEventsSpecVersion.Default);
             receivedCloudEvent.Type.Should().Be("com.github.pull.create");
@@ -60,21 +62,15 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
             receivedCloudEvent.Subject.Should().Be("123");
             receivedCloudEvent.Id.Should().Be("A234-1234-1234");
             receivedCloudEvent.Time.Should().NotBeNull();
-            receivedCloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
-            receivedCloudEvent.DataContentType.Should().Be(new ContentType(MediaTypeNames.Text.Xml));
+            receivedCloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTimeOffset.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture));
+            receivedCloudEvent.DataContentType.Should().Be(MediaTypeNames.Text.Xml);
+            receivedCloudEvent.Data.Should().Be(data);
 
-            if (contentMode == ContentMode.Structured)
-            {
-                receivedCloudEvent.Data.Should().Be(data);
-            }
-            else
-            {
-                Encoding.UTF8.GetString((byte[])receivedCloudEvent.Data).Should().Be(data);
-            }
-
-            var receivedAttrs = receivedCloudEvent.GetAttributes();
-            ((string)receivedAttrs["comexampleextension1"]).Should().Be("value");
-            ((int)((dynamic)receivedAttrs["comexampleextension2"]).othervalue).Should().Be(5);
+            var receivedAttrs = receivedCloudEvent.GetPopulatedAttributes();
+            var attrPair1 = receivedAttrs.FirstOrDefault(x => x.Key.Name == "comexampleextension1");
+            attrPair1.Should().NotBeNull();
+            attrPair1.Key.Type.Should().Be(CloudEventAttributeType.String);
+            ((string)attrPair1.Value).Should().Be("value");
         }
     }
 }
