@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudNative.CloudEvents.NewtonsoftJson" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\src\CloudNative.CloudEvents.AzureServiceBus.csproj" />
   </ItemGroup>
 

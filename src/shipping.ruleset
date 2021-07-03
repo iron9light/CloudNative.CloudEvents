@@ -24,6 +24,8 @@
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.OrderingRules">
     <!-- UsingDirectivesMustBePlacedCorrectly -->
     <Rule Id="SA1200" Action="None" />
+    <!-- ElementsMustBeOrderedByAccess -->
+    <Rule Id="SA1202" Action="None" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.NamingRules">
     <!-- FieldNamesMustNotBeginWithUnderscore -->
