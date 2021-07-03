@@ -60,77 +60,96 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             Validation.CheckNotNull(formatter, nameof(formatter));
             if (HasCloudEventsContentType(message, out var contentType))
             {
-                using (var stream = new MemoryStream(message.Body))
-                {
-                    var cloudEvent = formatter.DecodeStructuredModeMessage(stream, new ContentType(contentType), extensionAttributes);
-                    cloudEvent.Id = message.MessageId;
-                    return cloudEvent;
-                }
+                return StructuredToCloudEvent(message, contentType, formatter, extensionAttributes);
             }
             else
             {
-                var propertyMap = message.UserProperties;
-                if (!propertyMap.TryGetValue(Constants.SpecVersionPropertyKey, out var versionId))
-                {
-                    throw new ArgumentException("Request is not a CloudEvent", nameof(message));
-                }
+                return BinaryToCloudEvent(message, formatter, extensionAttributes);
+            }
+        }
 
-                var version = CloudEventsSpecVersion.FromVersionId(versionId as string)
-                    ?? throw new ArgumentException($"Unknown CloudEvents spec version '{versionId}'", nameof(message));
-
-                var cloudEvent = new CloudEvent(version, extensionAttributes)
-                {
-                    Id = message.MessageId,
-                    DataContentType = message.ContentType,
-                };
-
-                foreach (var property in propertyMap)
-                {
-                    if (!property.Key.StartsWith(Constants.PropertyKeyPrefix))
-                    {
-                        continue;
-                    }
-
-                    var attributeName = property.Key.Substring(Constants.PropertyKeyPrefix.Length).ToLowerInvariant();
-
-                    // We've already dealt with the spec version.
-                    if (attributeName == CloudEventsSpecVersion.SpecVersionAttribute.Name)
-                    {
-                        continue;
-                    }
-
-                    // Timestamps are serialized via DateTime instead of DateTimeOffset.
-                    if (property.Value is DateTime dt)
-                    {
-                        if (dt.Kind != DateTimeKind.Utc)
-                        {
-                            // This should only happen for MinValue and MaxValue...
-                            // just respecify as UTC. (We could add validation that it really
-                            // *is* MinValue or MaxValue if we wanted to.)
-                            dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
-                        }
-
-                        cloudEvent[attributeName] = (DateTimeOffset)dt;
-                    }
-
-                    // URIs are serialized as strings, but we need to convert them back to URIs.
-                    // It's simplest to let CloudEvent do this for us.
-                    else if (property.Value is string text)
-                    {
-                        cloudEvent.SetAttributeFromString(attributeName, text);
-                    }
-                    else
-                    {
-                        cloudEvent[attributeName] = property.Value;
-                    }
-                }
-
-                formatter.DecodeBinaryModeEventData(message.Body, cloudEvent);
-
-                Validation.CheckCloudEventArgument(cloudEvent, nameof(message));
-
+        private static CloudEvent StructuredToCloudEvent(
+            Message message,
+            string contentType,
+            CloudEventFormatter formatter,
+            IEnumerable<CloudEventAttribute>? extensionAttributes
+            )
+        {
+            using (var stream = new MemoryStream(message.Body))
+            {
+                var cloudEvent = formatter.DecodeStructuredModeMessage(stream, new ContentType(contentType), extensionAttributes);
+                cloudEvent.Id = message.MessageId;
                 return cloudEvent;
             }
+        }
+
+        private static CloudEvent BinaryToCloudEvent(
+            Message message,
+            CloudEventFormatter formatter,
+            IEnumerable<CloudEventAttribute>? extensionAttributes
+            )
+        {
+            var propertyMap = message.UserProperties;
+            if (!propertyMap.TryGetValue(Constants.SpecVersionPropertyKey, out var versionId))
+            {
+                throw new ArgumentException("Request is not a CloudEvent", nameof(message));
+            }
+
+            var version = CloudEventsSpecVersion.FromVersionId(versionId as string)
+                ?? throw new ArgumentException($"Unknown CloudEvents spec version '{versionId}'", nameof(message));
+
+            var cloudEvent = new CloudEvent(version, extensionAttributes)
+            {
+                Id = message.MessageId,
+                DataContentType = message.ContentType,
+            };
+
+            foreach (var property in propertyMap)
+            {
+                if (!property.Key.StartsWith(Constants.PropertyKeyPrefix))
+                {
+                    continue;
+                }
+
+                var attributeName = property.Key.Substring(Constants.PropertyKeyPrefix.Length).ToLowerInvariant();
+
+                // We've already dealt with the spec version.
+                if (attributeName == CloudEventsSpecVersion.SpecVersionAttribute.Name)
+                {
+                    continue;
+                }
+
+                // Timestamps are serialized via DateTime instead of DateTimeOffset.
+                if (property.Value is DateTime dt)
+                {
+                    if (dt.Kind != DateTimeKind.Utc)
+                    {
+                        // This should only happen for MinValue and MaxValue...
+                        // just respecify as UTC. (We could add validation that it really
+                        // *is* MinValue or MaxValue if we wanted to.)
+                        dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                    }
+
+                    cloudEvent[attributeName] = (DateTimeOffset)dt;
+                }
+
+                // URIs are serialized as strings, but we need to convert them back to URIs.
+                // It's simplest to let CloudEvent do this for us.
+                else if (property.Value is string text)
+                {
+                    cloudEvent.SetAttributeFromString(attributeName, text);
+                }
+                else
+                {
+                    cloudEvent[attributeName] = property.Value;
+                }
+            }
+
+            formatter.DecodeBinaryModeEventData(message.Body, cloudEvent);
+
+            Validation.CheckCloudEventArgument(cloudEvent, nameof(message));
+
+            return cloudEvent;
         }
 
         private static bool HasCloudEventsContentType(Message message, out string contentType)
