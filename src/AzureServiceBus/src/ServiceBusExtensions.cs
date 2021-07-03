@@ -9,8 +9,19 @@ using Microsoft.Azure.ServiceBus;
 
 namespace CloudNative.CloudEvents.AzureServiceBus
 {
+    /// <summary>
+    /// Extension methods to convert between CloudEvents and ServiceBus messages.
+    /// </summary>
     public static class ServiceBusExtensions
     {
+        /// <summary>
+        /// Indicates whether this <see cref="Message"/> holds a single CloudEvent.
+        /// </summary>
+        /// <remarks>
+        /// This method returns false for batch requests, as they need to be parsed differently.
+        /// </remarks>
+        /// <param name="message">The message to check for the presence of a CloudEvent. Must not be null.</param>
+        /// <returns>true, if the message is a CloudEvent.</returns>
         public static bool IsCloudEvent(this Message message)
         {
             Validation.CheckNotNull(message, nameof(message));
@@ -18,6 +29,13 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                 message.UserProperties.ContainsKey(Constants.SpecVersionPropertyKey);
         }
 
+        /// <summary>
+        /// Converts this <see cref="Message"/> into a CloudEvent object.
+        /// </summary>
+        /// <param name="message">The message to convert. Must not be null.</param>
+        /// <param name="formatter">The event formatter to use to parse the CloudEvent. Must not be null.</param>
+        /// <param name="extensionAttributes">The extension attributes to use when parsing the CloudEvent.</param>
+        /// <returns>A validated CloudEvent.</returns>
         public static CloudEvent ToCloudEvent(
             this Message message,
             CloudEventFormatter formatter,
@@ -25,10 +43,17 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             )
             => message.ToCloudEvent(formatter, (IEnumerable<CloudEventAttribute>)extensionAttributes);
 
+        /// <summary>
+        /// Converts this <see cref="Message"/> into a CloudEvent object.
+        /// </summary>
+        /// <param name="message">The message to convert. Must not be null.</param>
+        /// <param name="formatter">The event formatter to use to parse the CloudEvent. Must not be null.</param>
+        /// <param name="extensionAttributes">The extension attributes to use when parsing the CloudEvent. May be null.</param>
+        /// <returns>A validated CloudEvent.</returns>
         public static CloudEvent ToCloudEvent(
             this Message message,
             CloudEventFormatter formatter,
-            IEnumerable<CloudEventAttribute> extensionAttributes
+            IEnumerable<CloudEventAttribute>? extensionAttributes
             )
         {
             Validation.CheckNotNull(message, nameof(message));
@@ -114,6 +139,13 @@ namespace CloudNative.CloudEvents.AzureServiceBus
             return MimeUtilities.IsCloudEventsContentType(contentType);
         }
 
+        /// <summary>
+        /// Converts a CloudEvent to <see cref="Message"/>.
+        /// </summary>
+        /// <param name="cloudEvent">The CloudEvent to convert. Must not be null, and must be a valid CloudEvent.</param>
+        /// <param name="contentMode">Content mode. Structured or binary.</param>
+        /// <param name="formatter">The formatter to use within the conversion. Must not be null.</param>
+        /// <returns>A <see cref="Message"/>.</returns>
         public static Message ToServiceBusMessage(
             this CloudEvent cloudEvent,
             ContentMode contentMode,
@@ -173,6 +205,8 @@ namespace CloudNative.CloudEvents.AzureServiceBus
                 var propertyValue = pair.Value switch
                 {
                     Uri uri => uri.ToString(),
+
+                    // Compat with CloudEvents.Amqp implemenation
                     DateTimeOffset dto => dto.UtcDateTime,
                     _ => pair.Value,
                 };
