@@ -62,7 +62,7 @@ namespace CloudNative.CloudEvents.AzureServiceBus.Tests
             receivedCloudEvent.Subject.Should().Be("123");
             receivedCloudEvent.Id.Should().Be("A234-1234-1234");
             receivedCloudEvent.Time.Should().NotBeNull();
-            receivedCloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTime.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture).ToUniversalTime());
+            receivedCloudEvent.Time!.Value.ToUniversalTime().Should().Be(DateTimeOffset.Parse("2018-04-05T17:31:00Z", CultureInfo.InvariantCulture));
             receivedCloudEvent.DataContentType.Should().Be(MediaTypeNames.Text.Xml);
             receivedCloudEvent.Data.Should().Be(data);
 
